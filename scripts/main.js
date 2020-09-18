@@ -5,6 +5,7 @@ var THUMBNAIL_LINK_SELECTOR = '[data-image-role="trigger"]';
 var HIDDEN_DETAIL_CLASS = 'hidden-detail';
 var TINY_EFFECT_CLASS = 'is-tiny';
 var ESC_KEY = 27;
+var LEFT_RIGHT_BUTTONS = "[data-image-button=\"button\"]";
 
 function setDetails(imageUrl, titleText) {
   'use strict';
@@ -71,11 +72,64 @@ function addKeyPressHandler() {
   });
 }
 
+function leftRightButtons() {
+  "use strict";
+  var getCurrTitle = document.querySelector(DETAIL_TITLE_SELECTOR);
+  var buttons = document.querySelectorAll(LEFT_RIGHT_BUTTONS);
+  var buttonsArr = [].slice.call(buttons);
+  var leftButton = buttonsArr[0];
+  var rightButton = buttonsArr[1];
+  var thumbnailsArr = getThumbnailsArray();
+  var currImage;
+  var currTitle;
+
+  
+  leftButton.addEventListener("click", function(event) {
+    event.preventDefault();
+
+    for (var i = 0; i < thumbnailsArr.length; i++) {
+      if (thumbnailsArr[i].getAttribute("data-image-title") == getCurrTitle.textContent) {
+        if (i == 0) {
+          currImage = imageFromThumb(thumbnailsArr[thumbnailsArr.length - 1]);
+          currTitle = titleFromThumb(thumbnailsArr[thumbnailsArr.length - 1]);
+          setDetails(currImage, currTitle);
+          break;
+        } else if (i != 0) {
+          currImage = imageFromThumb(thumbnailsArr[i - 1]);
+          currTitle = titleFromThumb(thumbnailsArr[i - 1]);
+          setDetails(currImage, currTitle);
+        }
+      }
+    }
+
+  });
+
+  rightButton.addEventListener("click", function(event) {
+    event.preventDefault();
+
+    for (var i = 0; i < thumbnailsArr.length; i++) {
+      if (thumbnailsArr[i].getAttribute("data-image-title") == getCurrTitle.textContent) {
+        if (i == thumbnailsArr.length - 1) {
+          currImage = imageFromThumb(thumbnailsArr[0]);
+          currTitle = titleFromThumb(thumbnailsArr[0]);
+          setDetails(currImage, currTitle);
+        } else {
+          currImage = imageFromThumb(thumbnailsArr[i + 1]);
+          currTitle = titleFromThumb(thumbnailsArr[i + 1]);
+          setDetails(currImage, currTitle);
+          break;
+        }
+      }
+    }
+  });
+}
+
 function initializeEvents() {
   'use strict';
   var thumbnails = getThumbnailsArray();
   thumbnails.forEach(addThumbClickHandler);
   addKeyPressHandler();
+  leftRightButtons();
 }
 
 initializeEvents();
